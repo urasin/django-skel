@@ -1,0 +1,33 @@
+- name: add rpm
+  sudo: yes
+  yum: name=http://repo.mysql.com/mysql-community-release-el6-5.noarch.rpm state=present
+
+- name: yum update
+  sudo: yes
+  yum: name=* state=latest
+
+- name: install mysql
+  sudo: yes
+  yum: name=mysql-community-server
+
+- name: mysql start
+  sudo: yes
+  service: name=mysqld state=running enabled=yes
+
+- name: install mysql python module for ansible
+  sudo: yes
+  yum:
+    name:  MySQL-python
+    state: present
+
+- name: create database
+  sudo: yes
+  mysql_db: db={{ db_name }} state=present encoding=utf8
+
+- name: create database user
+  sudo: yes
+  mysql_user: >
+    name={{ db_user }}
+    password={{ db_password }}
+    priv={{ db_name }}.*:ALL
+    state=present

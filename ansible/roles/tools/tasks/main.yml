@@ -1,0 +1,15 @@
+- name: install tools
+  sudo: yes
+  yum: name={{ item }} state=latest
+  with_items:
+    - libselinux-python
+    - htop
+    - lsof
+    - wget
+    - curl
+    - git
+    - libxml2
+    - libxslt
+
+- name: cp bashrc
+  template: src=bashrc dest=~/.bashrc

@@ -1,0 +1,38 @@
+- name: install package for python
+  sudo: yes
+  yum: name={{ item }} state=latest
+  with_items:
+    - gcc-c++
+    - gcc
+    - git
+    - wget
+    - zlib-devel
+    - bzip2
+    - bzip2-devel
+    - readline-devel
+    - sqlite-devel
+    - openssl-devel
+    - libjpeg-devel
+    - libselinux-python
+    - mysql-community-devel
+
+- name: git clone pyenv
+  git: repo=https://github.com/yyuu/pyenv.git dest="{{ home_dir }}/.pyenv" version=master
+
+- name: pyenv version check
+  shell: "{{ home_dir }}/.pyenv/bin/pyenv version"
+  register: pyenv_check
+
+- name: pyenvinstall 3.4.2
+  shell: "{{ home_dir }}/.pyenv/bin/pyenv install 3.4.2"
+  ignore_errors: yes
+  when: pyenv_check.stdout!="3.4.2 (set by {{ home_dir }}/.pyenv/version)"
+
+- name: pyenvglobal 3.4.2
+  shell: "{{ home_dir }}/.pyenv/bin/pyenv global 3.4.2"
+
+- name: pyenvrehash
+  shell: "{{ home_dir }}/.pyenv/bin/pyenv rehash"
+
+- name: install mysqlclient
+  pip: executable="{{ home_dir }}/.pyenv/shims/pip3.4" name=mysqlclient
